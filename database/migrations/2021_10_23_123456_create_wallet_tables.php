@@ -17,7 +17,7 @@ class CreateWalletTables extends Migration
         $walletTable = (new $walletModelClass())->getTable();
         if (!Schema::hasTable($walletTable)) {
             Schema::create($walletTable, function (Blueprint $table) {
-                $table->increments('id');
+                $table->id();
                 $table->unsignedInteger('owner_id')->nullable();
                 $table->string('owner_type')->nullable();
                 $type = config('wallet.column_type');
