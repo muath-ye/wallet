@@ -17,7 +17,7 @@ class CreateWalletTables extends Migration
         $walletTable = (new $walletModelClass())->getTable();
         if (!Schema::hasTable($walletTable)) {
             Schema::create($walletTable, function (Blueprint $table) {
-                $table->id();
+                $table->unsignedBigInteger('id')->autoIncrement();
                 $table->unsignedInteger('owner_id')->nullable();
                 $table->string('owner_type')->nullable();
                 $type = config('wallet.column_type');
@@ -34,9 +34,9 @@ class CreateWalletTables extends Migration
         $transactionModelClass = config('wallet.transaction_model');
         $transactionTable = (new $transactionModelClass())->getTable();
         if (!Schema::hasTable($transactionTable)) {
-            Schema::create($transactionTable, function (Blueprint $table) {
+            Schema::create($transactionTable, function (Blueprint $table) use ($walletTable) {
                 $table->increments('id');
-                $table->unsignedInteger('wallet_id');
+                $table->unsignedBigInteger('wallet_id');
 
                 if (config('wallet.column_type') == 'decimal') {
                     $table->decimal('amount', 12, 4); // amount is an decimal, it could be "dollars" or "cents"
@@ -50,7 +50,7 @@ class CreateWalletTables extends Migration
 
                 $table->timestamps();
                 $table->softDeletes();
-                $table->foreign('wallet_id')->references('id')->on('wallets')->onDelete('cascade');
+                $table->foreign('wallet_id')->references('id')->on($walletTable)->onDelete('cascade');
             });
         }
 
